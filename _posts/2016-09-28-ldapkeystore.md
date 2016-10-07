@@ -51,19 +51,49 @@ If we was successful, we can read list of aliases in our LDAP-backed KeyStore:
 }
 {% endhighlight %}
 
-
-
-
+Such a KeyStore can be now used by the same way as classical file based KeyStore - for example, you can use it as truststore of SSLContext - create appropriate TrustManager and SSLContext using it:
 
 {% highlight bash %}
-/subsystem=elytron/dir-context=LocalLDAPanon/:add(authentication-level=none)
-/subsystem=elytron/dir-context=LocalLDAP/:add(authentication-level=none,credential="serverPassword",principal="uid=server,dc=elytron,dc=wildfly,dc=org",referral-mode=IGNORE)
-/subsystem=elytron/ldap-key-store=TestingLdapKeyStore/:add(dir-context=LocalLDAPanon,search-path="ou=keystore,dc=elytron,dc=wildfly,dc=org",search-recursive=true)
+/subsystem=elytron/trust-managers=MyTrustManager/:add(algorithm=SunX509, key-store=LKS1)
+/subsystem=elytron/server-ssl-context=MySslContext/:add(key-managers=twoWayKM, trust-managers=MyTrustManager, need-client-auth=true, protocols=[TLSv1_1,TLSv1_2])
 {% endhighlight %}
 
+Then SSLContext can be used in Undertow's HTTPS listener to secure access to web:
+
+{% highlight bash %}
+/subsystem=undertow/server=default-server/https-listener=https/:write-attribute(name=ssl-context, value=MySslContext)
+{% endhighlight %}
+
+If you don't need to obtain users identity from an application, this configuration will be sufficient to protect access to your application using client SSL certificates stored in LDAP.
 
 ## Storing certificates in LDAP
 
+If you don't store SSL certificates in LDAP directory yet, passing them in can be a bit complicated.
+Certificates, certificates chains and potentionally encrypted keys have to be converted into form specified above and encoded into Base64 before they can be passed into LDIF file, which can be imported into LDAP directory.
 
+Lets suppose we have PEM certificate of user and we want to obtain LDIF importable into his LDAP entry. We need to convert it into DER format using `openssl` and place it into LDIF in Base64 using `ldif` utility:
+
+{% highlight bash %}
+openssl x509 -in user.pem -outform DER -out /tmp/outcert.der
+ldif -b "usercertificate" < /tmp/outcert.der
+{% endhighlight %}
+
+By the similar way we can convert more certificates into PKCS#7 certificate chain:
+
+{% highlight bash %}
+openssl crl2pkcs7 -nocrl -certfile user.pem -certfile ca.pem -out /tmp/chain.p7b
+ldif -b "userSMIMECertificate" < /tmp/chain.p7b
+{% endhighlight %}
+
+The private key can be stored in PKCS#12 in the directory - that mean the key will be encrypted using passphrase, which will be never send to the LDAP. Even through I would not recommand to store private keys on remote machine if you don't have to.
+
+If you have your private key in classical Java keystore now and you want to store them in the LDAP, you have to export it into PKCS#12 file and convert it into LDIF by the same way as certificates:
+
+{% highlight bash %}
+keytool -importkeystore -srckeystore my.keystore -srcstoretype jks -destkeystore /tmp/export.p12 -deststoretype pkcs12
+ldif -b "userPKCS12" < /tmp/export.p12
+{% endhighlight %}
+
+Example of complete LDIF is available as [part of WildFly Elytron tests](https://github.com/wildfly-security/wildfly-elytron/blob/11d2aca181419deee792fefc9f16a7601c41da7d/src/test/resources/ldap/elytron-keystore-tests.ldif).
 
 
