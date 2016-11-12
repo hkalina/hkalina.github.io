@@ -9,7 +9,7 @@ If you didn't know it yet, Elytron is new security framework of WildFly applicat
 I suppose you have already heard about KeyStore, facility in Java which allows to store certificates and cryptographic keys in encrypted form.
 KeyStores are traditionally used as storage of private keys for SSL secured services and also as truststore - storage of trusted certificates - of certification authorities (CA) or directly certificates of individual peers (clients for server or servers for client).
 
-The traditional KeyStore is a one file somewhere in filesystem. It is very practical if you need to store one or few private keys or CA certificates, but in same cases we can meet the need to manage trusted certificates or cryptographical keys from one central place.
+The traditional KeyStore is one file somewhere in filesystem. It is very practical if you need to store one or few private keys or CA certificates, but in some cases we can meet the need to manage trusted certificates or cryptographical keys from one central place - when we have a lot of them or we need to change them often.
 
 A de facto standard for central management are today LDAP based directory services. They are used not only as central directory of basic information about users and computers in the network. Solutions, like Red Hat Identity Management or Microsoft Active Directory, use LDAP (together with Kerberos) for authentication of users and for computers configuration.
 
@@ -20,8 +20,8 @@ The purpose of LDAP KeyStore is to allow using of any LDAP directory as certific
 The idea to store certificates and keys in LDAP is not new - already [RFC 2798](https://tools.ietf.org/html/rfc2798) from 2000 brings `inetOrgPerson` object class, which covers:
 
 * `userCertificate` - the X.509 certificate of the user
-* `userSMIMECertificate` - the S/MIME certificates chain encoded in PKCS#7
-* `userPKCS12` - the PKCS12 archive of PFX PDUs (personal information exchange protocol data units) - certificates chain and private key packed in one password encrypted file
+* `userSMIMECertificate` - the S/MIME certificates chain (user certificate with all certificates required to verify it) encoded in PKCS#7
+* `userPKCS12` - the PKCS#12 archive of PFX PDUs (personal information exchange protocol data units) - certificates chain and private key packed in one password encrypted file
 
 As you can see, this LDAP attributes covers all needs of Java KeyStore - they allow to store certificates, certificates chains and cryptographical keys. The only limitation is need of standalone LDAP entries for individual KeyStore aliases/items. The LDAP entry containing KeyStore item illustrates following image.
 
@@ -35,9 +35,9 @@ Lets start using LDAP KeyStore in WildFly. At first we have to define connection
 /subsystem=elytron/dir-context=Ldap1/:add(authentication-level=simple, url="ldap://localhost:11390/", principal="uid=server,dc=elytron,dc=wildfly,dc=org", credential="serverPassword")
 {% endhighlight %}
 
-In this example we have defined password protected but unencrypted connection to the LDAP server. Use this for testing purposes only - the SSL should be added for real use cases. Without it nor integrity will be ensured, so this is not good choice nor for a truststore (not to mention about keystore). Creating secured `dir-context` will be described in standalone blog post.
+In this example we have defined password protected but unencrypted connection to the LDAP server. Use this for testing purposes only - the SSL should be added for real use cases. Without it integrity will not be ensured, so this is not good choice nor for a truststore (not to mention about keystore). Creating secured `dir-context` will be described in standalone blog post.
 
-When is `dir-context` created, we can create the `ldap-key-store` itself. In most simple case you need to specify only name of `dir-context` and `search-path` where will be KeyStore aliases searched. Just note, if not specified differently, the search is not recursive - only direct subentries of specified path will be searched.
+When the `dir-context` is created, we can create the `ldap-key-store` itself. In most simple case you need to specify only name of `dir-context` and `search-path`, where the KeyStore aliases will be searched. Just note, if not specified differently, the search is not recursive - only direct subentries of specified path will be searched.
 
 {% highlight bash %}
 /subsystem=elytron/ldap-key-store=LKS1/:add(dir-context=Ldap1, search-path="ou=keystore,dc=elytron,dc=wildfly,dc=org")
@@ -71,8 +71,8 @@ If you don't need to obtain users identity from an application, this configurati
 
 ## Storing certificates in LDAP
 
-If you have not SSL certificates in LDAP directory yet, you will following steps to get them in.
-Certificates, certificates chains and potentially encrypted keys have to be converted into form specified above and encoded into Base64 to they can be passed into LDIF file, which can be imported into LDAP directory.
+If you have not SSL certificates in LDAP directory yet, you will need following steps to get them in.
+Certificates, certificates chains and potentially encrypted keys have to be converted into form specified above and encoded into Base64, to be passed into LDIF file which can be imported into LDAP directory.
 
 Lets suppose we have PEM certificate of user and we want to obtain LDIF to import it into LDAP entry. We need to convert it into DER format using `openssl` first and format it into LDIF Base64 attribute using `ldif` utility:
 
@@ -99,5 +99,5 @@ ldif -b "userPKCS12" < /tmp/export.p12
 
 By this way you can put as much truststore or keystore entries into LDAP as you want.
 
-Example of complete LDIF is available as [part of WildFly Elytron tests](https://github.com/wildfly-security/wildfly-elytron/blob/11d2aca181419deee792fefc9f16a7601c41da7d/src/test/resources/ldap/elytron-keystore-tests.ldif).
+If you would like to see example of LDIF, which should be output of previous steps, you can check [LDIF from Elytron tests](https://github.com/wildfly-security/wildfly-elytron/blob/11d2aca181419deee792fefc9f16a7601c41da7d/src/test/resources/ldap/elytron-keystore-tests.ldif).
 
