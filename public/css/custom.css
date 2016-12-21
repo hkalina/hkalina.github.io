@@ -1,0 +1,25 @@
+
+.sidebar-logo {
+  display: none;
+}
+
+@media (min-width: 48em) and (min-height: 42em) {
+  .sidebar-logo {
+    display: block;
+    position: absolute;
+    top:    1rem;
+    left:   1rem;
+    background-image: url("/public/logo.png");
+    background-size: 250px 316px;
+    width: 250px;
+    height: 316px;
+  }
+}
+
+@media (min-width: 58em) {
+  .sidebar-logo {
+    background-size: 315px 399px;
+    width: 315px;
+    height: 399px;
+  }
+}
