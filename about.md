@@ -3,7 +3,11 @@ layout: page
 title: About
 ---
 
-My name is Jan Kalina (Honza, informally) and I am software developer at Red Hat. In this blog I would like to introduce some news and experiences from development of WildFly Elytron and from Java development in general.
+My name is Jan Kalina (Honza, informally) and I am software developer at Red Hat. In this blog I would like to introduce some news from development of WildFly Elytron (see below) and experiences from development in software projects with big codebase, where not everything is good documented - such code we sometime call "code where dragons lives." That is reason for subtitle of this blog - Guide to the code where dragons lives.
+
+That does not mean, that WildFly is full of dragons, of course. This are two independent aims of this blog. Don't look for connection here ;)
+
+### Elytron ###
 
 Elytron is new security framework of WildFly - Java EE application server, which was known as JBoss Application Server earlier.
 This blog will be aimed to some interesting points of individual parts of the framework.
