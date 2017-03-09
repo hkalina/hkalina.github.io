@@ -1,11 +1,12 @@
 ---
 layout: post
+published: false
 title: Server factories chains in Elytron
 ---
 
 WildFly Elytron use one special way to configure `SaslServerFactories` and `HttpServerFactories`.
 When you will try to debug them, you will find indefinitely long chaing of delegating server factories.
-Because it is hard and exhaustive to find point, where is this chain constructed, I will describe it in this post for my future me, or for anybody who could need it.
+Because it is hard and exhaustive to find point, where is this chain constructed, I will describe it in this post for my future me, or for anybody interested.
 
 The most of magic happens in SaslServerDefinition/HttpServerDefinition in elytron-subsystem in block like this:
 
@@ -44,7 +45,19 @@ public final class SetSomethingSaslServerFactory implements SaslServerFactory {
 }
 {% endhighlight %}
 
-As you can see, it is really very simple - you will see how much it is annoying when you will be trying to debug it and will not be able to find end of the delegating chain ;)
-
 A bit different is special delegating server factory `SetMechanismInformationSaslServerFactory` - it takes parameters from children, which delegate to it and send this paremeters back to the top caller using special `MechanismInformationCallback` - callback which provides all this params to callback handler, which was at the beginning set by the top caller! How easy... well it is not, but if you have a tip how to implement such feature without robustness degradation...
+
+
++----------------------------------+----------------------------------+
+| configurable-sasl-server-factory | MechanismProviderFilteringSSF    |
+|                                  | SetMechanismProviderFilteringSSF |
+|                                  | SetMechanismInfomrationSSF       |
+|                                  | SetProtocolSSF                   |
+|                                  | SetServerSSF                     |
+|                                  | SetPropertiesSSF                 |
+|                                  | FilterMechanismSSF               |
++----------------------------------+----------------------------------+
+| provider-sasl-server-factory     | SecurityProviderSSF              |
++----------------------------------+----------------------------------+
+
 
