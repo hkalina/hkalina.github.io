@@ -3,20 +3,22 @@ layout: post
 title: Debugging WildFly Arquillian test
 ---
 
-When the worst comes in WildFly development, it is time to debug Arquillian test. The worst is, you have to debug two JVMs in two debuggers in one time:
+When the worst comes in WildFly development, it is time to debug Arquillian test.
+In this article I want to compile instructios how to do it.
 
-JVM of the test
-***************
+The worst thing on it is, you have to debug two JVMs in two debuggers in one time:
+
+## JVM of the test
 
 To debug it run test in maven with following param:
 
-{% highlight %}
+{% highlight text %}
 -Dmaven.surefire.debug="-Xdebug -Xrunjdwp:transport=dt_socket,server=n,address=5005"
 {% endhighlight %}
 
 For example:
 
-{% highlight %}
+{% highlight text %}
 mvn clean install -Dtest=org.jboss.as.test.integration.web.formauth.FormAuthUnitTestCase#testPostDataFormAuth -Dmaven.surefire.debug="-Xdebug -Xrunjdwp:transport=dt_socket,server=n,address=5005"
 {% endhighlight %}
 
@@ -27,12 +29,11 @@ In IDEA we will setup this Remote debug in test project by folowing way:
 
 At first we should press Debug in IDEA and start the maven test in CLI after.
 
-JVM of WildFly
-**************
+## JVM of WildFly
 
 To debug it you have to modify **arquilian.xml** of the test (probably in `src/test/config/arq/arquilian.xml`) and add `-agentlib` param:
 
-{% highlight %}
+{% highlight text %}
 -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8787
 {% endhighlight %}
 
