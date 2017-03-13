@@ -52,3 +52,13 @@ In this case we can start Debug only when JVM is already running - when the test
 * press Debug buttom randomly **after** `T E S T S` headline appears in maven output (stupid but fast and often works :)
 * to debug JVM of the test and connect second debugger when the test will be waiting on breakpoint
 
+## JVM of JBoss CLI
+
+Sometime you can also need to debug JBoss CLI client. That require to uncomment following near the end of `bin/jboss-cli.sh`:
+
+{% highlight text %}
+JAVA_OPTS="$JAVA_OPTS -agentlib:jdwp=transport=dt_socket,address=8787,server=y,suspend=n"
+{% endhighlight %}
+
+Just note, don't forgot to change port 8787 to samething else, if you want to debug CLI and server at one time.
+
