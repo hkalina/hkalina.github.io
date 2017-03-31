@@ -3,7 +3,7 @@ layout: page
 title: About
 ---
 
-My name is Jan Kalina (Honza, informally) and I am software developer at Red Hat. In this blog I would like to introduce some news from development of WildFly Elytron (see below) and experiences from development in software projects with big codebase, where not everything is good documented - such code we sometime call "code where dragons lives." That is reason for subtitle of this blog - Guide to the code where dragons lives.
+My name is Jan Kalina (Honza, informally) and I am a software developer at Red Hat. In this blog I would like to introduce some news from development of WildFly Elytron (see below) and experiences from development in software projects with large codebases, where not everything is good documented - such code we sometime call "code where dragons lives." That is reason for subtitle of this blog - Guide to the code where dragons live.
 
 That does not mean, that WildFly is full of dragons, of course. This are two independent aims of this blog. Don't look for connection here ;)
 
