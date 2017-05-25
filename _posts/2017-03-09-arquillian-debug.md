@@ -62,3 +62,14 @@ JAVA_OPTS="$JAVA_OPTS -agentlib:jdwp=transport=dt_socket,address=8787,server=y,s
 
 Just note, don't forgot to change port 8787 to samething else, if you want to debug CLI and server at one time.
 
+## How to run one concrete test using maven
+
+To run one concrete test from WildFly testsuite you can use following maven parameters:
+
+{% highlight text %}
+mvn clean install -DallTests -Dmaven.test.failure.ignore=true -pl testsuite/integration/basic -Dtest=org.jboss.as.test.integration.naming.ldap.LdapUrlInSearchBaseTestCase
+{% endhighlight %}
+
+Run this in wildfly directory (where you cloned git repository), use `-pl` to specify testsuite directory and use `-Dtest` to specify test in testsuite. Use `-Delytron` if you want to test it.
+**Do not remove** `-DallTests`, even through you want to run only one test - it is necessary to run any non-smoke test.
+
