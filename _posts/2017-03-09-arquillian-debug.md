@@ -31,7 +31,13 @@ At first we should press Debug in IDEA and start the maven test in CLI after.
 
 ## JVM of WildFly
 
-To debug it you have to modify **arquilian.xml** of the test (probably in `src/test/config/arq/arquilian.xml`) and add `-agentlib` param:
+To debug JVM of WildFly use following param:
+
+{% highlight text %}
+"-Djvm.args.other=-server -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8787"
+{% endhighlight %}
+
+Or you can modify **arquilian.xml** (probably in `src/test/config/arq/arquilian.xml`) - add `-agentlib` param:
 
 {% highlight text %}
 -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8787
