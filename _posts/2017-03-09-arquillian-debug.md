@@ -4,7 +4,7 @@ title: Debugging WildFly Arquillian test
 ---
 
 When the worst comes in WildFly development, it is time to debug Arquillian test.
-In this article I want to compile instructios how to do it.
+In this article I want to compile instructions how to do it.
 
 The worst thing on it is, you have to debug two JVMs in two debuggers in one time:
 
