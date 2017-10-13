@@ -3,7 +3,7 @@ layout: post
 title: SSL key switch without server restart
 ---
 
-This tutorial describes using Elytron for simple HTTPS configuration allowing to switch SSL certificate and key without WildFly restart.
+The upcomming WildFly 11 (from 11.0.0.Beta1) using Elytron security framework to secure HTTPS connections supports key and certificate exchange without application server restart. This blogspot describes how to use Elytron for simple HTTPS configuration and how to make mentioned SSL certificate and key exchange.
 
 Lets suppose you have already your SSL key and certificate prepared in keystore file in `standalone/configuration` directory. For testing purposes you can generate self-signed certificate:
 
@@ -67,7 +67,7 @@ Now, when you navigate to the web published by application server, you will see 
 
 ## Certificate and key exchange
 
-Finally, to exchange certificate and key without server restart (on WildFly from 11.0.0.Beta1 using Elytron) follow steps:
+Finally, to exchange certificate and key without server restart follow steps:
 
 Exchange keystore file on the filesystem:
 
