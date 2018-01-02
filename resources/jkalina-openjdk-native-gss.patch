@@ -1,0 +1,36 @@
+diff --git a/src/java.security.jgss/share/classes/sun/security/jgss/wrapper/SunNativeProvider.java b/src/java.security.jgss/share/classes/sun/security/jgss/wrapper/SunNativeProvider.java
+--- a/src/java.security.jgss/share/classes/sun/security/jgss/wrapper/SunNativeProvider.java
++++ b/src/java.security.jgss/share/classes/sun/security/jgss/wrapper/SunNativeProvider.java
+@@ -54,7 +54,7 @@
+     private static final String LIB_PROP = "sun.security.jgss.lib";
+     private static final String DEBUG_PROP = "sun.security.nativegss.debug";
+     private static HashMap<String, String> MECH_MAP;
+-    static final Provider INSTANCE = new SunNativeProvider();
++
+     static boolean DEBUG;
+     static void debug(String message) {
+         if (DEBUG) {
+@@ -119,6 +119,8 @@
+                 });
+     }
+ 
++    static final Provider INSTANCE = new SunNativeProvider();
++
+     public SunNativeProvider() {
+         /* We are the Sun NativeGSS provider */
+         super(NAME, PROVIDER_VER, INFO);
+diff --git a/src/java.security.jgss/share/native/libj2gss/GSSLibStub.c b/src/java.security.jgss/share/native/libj2gss/GSSLibStub.c
+--- a/src/java.security.jgss/share/native/libj2gss/GSSLibStub.c
++++ b/src/java.security.jgss/share/native/libj2gss/GSSLibStub.c
+@@ -169,6 +169,11 @@
+   // initialize addrtype in CB first
+   cb->initiator_addrtype = GSS_C_AF_NULLADDR;
+   cb->acceptor_addrtype = GSS_C_AF_NULLADDR;
++  // addresses needs to be initialized to empty
++  cb->initiator_address.length = 0;
++  cb->initiator_address.value = NULL;
++  cb->acceptor_address.length = 0;
++  cb->acceptor_address.value = NULL;
+ 
+   /* set up initiator address */
+   jinetAddr = (*env)->CallObjectMethod(env, jcb,

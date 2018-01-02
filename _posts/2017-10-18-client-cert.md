@@ -3,7 +3,7 @@ layout: post
 title: CLIENT-CERT authentication with Elytron
 ---
 
-This blogspot describes how to use Elytron for two-way (client certificate) SSL authentication. This is draft which requires to have [https://github.com/wildfly-security/wildfly-elytron/pull/1018](patch #1018) merged.
+This blogspot describes how to use Elytron for two-way (client certificate) SSL authentication. This is draft which requires to have [patch #1018](https://github.com/wildfly-security/wildfly-elytron/pull/1018) merged.
 
 Lets suppose you have already your SSL key and certificate prepared in keystore file in `standalone/configuration` directory. For testing purposes you can generate self-signed certificate:
 
@@ -101,11 +101,17 @@ And to define Undertow security domain, which will use it:
 
 Now should be logging into application using certificate possible - user with valid certificate will get roles of user `test` and the application will get as user principal the certificate DN.
 
+By similar way you can extract some part of the certificate DN and use it to rewrite user principal to user name with appropriate roles in used security realm.
+
 ## Troubleshotting
+
+To enable Elytron traces logging:
 
 {% highlight text %}
 /subsystem=logging/logger=org.wildfly.security:add(level=TRACE)
 {% endhighlight %}
+
+To check keystores availability:
 
 {% highlight text %}
 /subsystem=elytron/key-store=httpsKS:read-aliases
