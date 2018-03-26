@@ -8,13 +8,13 @@ The upcomming WildFly 11 (from 11.0.0.Beta1) using Elytron security framework to
 Lets suppose you have already your SSL key and certificate prepared in keystore file in `standalone/configuration` directory. For testing purposes you can generate self-signed certificate:
 
 {% highlight text %}
-keytool -genkeypair -alias alias1 -keyalg RSA -keysize 1024 -validity 365 -keystore standalone/configuration/keystore.jks -dname "CN=alias1" -storepass secret1 -keypass secret2
+keytool -genkeypair -alias alias1 -keyalg RSA -keysize 1024 -validity 365 -keystore standalone/configuration/keystore.jks -dname "CN=alias1" -storetype JKS -storepass secret1 -keypass secret2
 {% endhighlight %}
 
 To be able to test certificate/key switching lets generate second testing keystore too:
 
 {% highlight text %}
-keytool -genkeypair -alias alias2 -keyalg RSA -keysize 1024 -validity 365 -keystore standalone/configuration/keystore2.jks -dname "CN=alias2" -storepass secret1 -keypass secret2
+keytool -genkeypair -alias alias2 -keyalg RSA -keysize 1024 -validity 365 -keystore standalone/configuration/keystore2.jks -dname "CN=alias2" -storetype JKS -storepass secret1 -keypass secret2
 {% endhighlight %}
 
 Now you can register generated keystore in Elytron and use it to secure HTTPS connections.
