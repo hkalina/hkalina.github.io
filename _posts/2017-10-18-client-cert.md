@@ -8,24 +8,32 @@ This blogspot describes how to use Elytron for two-way (client certificate) SSL 
 Lets suppose you have already your SSL key and certificate prepared in keystore file in `standalone/configuration` directory. For testing purposes you can generate self-signed certificate:
 
 {% highlight text %}
-keytool -genkeypair -alias alias1 -keyalg RSA -keysize 1024 -validity 365 -keystore standalone/configuration/keystore.jks -dname "CN=alias1" -storepass secret1 -keypass secret2
+keytool -genkeypair -alias alias1 -keyalg RSA -keysize 1024 -validity 365 -keystore standalone/configuration/keystore.jks -dname "CN=alias1" -storetype JKS -storepass secret1 -keypass secret2
 {% endhighlight %}
 
-To be able to test certificate/key switching lets generate second testing keystore too:
+Generate also client-side certificate as self-signed:
 
 {% highlight text %}
-keytool -genkeypair -alias alias2 -keyalg RSA -keysize 1024 -validity 365 -keystore standalone/configuration/keystore2.jks -dname "CN=alias2" -storepass secret1 -keypass secret2
+keytool -genkeypair -alias alias2 -keyalg RSA -keysize 1024 -validity 365 -keystore standalone/configuration/truststore.jks -dname "CN=alias1" -storetype JKS -storepass secret3 -keypass secret4
 {% endhighlight %}
+
+Re-export private key into PKCS12 to be able to import it into firefox:
+
+{% highlight text %}
+keytool -importkeystore -srcstoretype JKS -deststoretype PKCS12 -srcalias alias2 -destalias alias3 -srckeystore standalone/configuration/truststore.jks -destkeystore standalone/configuration/truststore.p12 -srcstorepass secret3 -srckeypass secret4 -deststorepass secret5 -destkeypass secret5
+{% endhighlight %}
+
+Just note that truststore should contain certificate/public key only in production deployment.
 
 ## SSL Elytron configuration
 
-When keystores are on place, we can configure keystores and managers to be used by new `server-ssl-context`.
-In comparison with simple one-way SSL we need to configure `trust-manager` too and we will set `want-client-auth` or `need-client-auth` later.
+When keystore is on place, we can configure `keystore` and `key-manager` to be used by new `server-ssl-context`.
+In comparison with simple one-way SSL we need to configure `trust-manager` too and to set `want-client-auth` or `need-client-auth` later.
 
 {% highlight text %}
-/subsystem=elytron/key-store=httpsKS:add(path=localhost.keystore,relative-to=jboss.server.config.dir,credential-reference={clear-text=Elytron},type=JKS,required=true)
-/subsystem=elytron/key-store=httpsTS:add(path=ca.truststore,relative-to=jboss.server.config.dir,credential-reference={clear-text=Elytron},type=JKS,required=true)
-/subsystem=elytron/key-manager=httpsKM:add(key-store=httpsKS,credential-reference={clear-text=Elytron})
+/subsystem=elytron/key-store=httpsKS:add(path=keystore.jks,relative-to=jboss.server.config.dir,credential-reference={clear-text=secret1},type=JKS,required=true)
+/subsystem=elytron/key-store=httpsTS:add(path=truststore.jks,relative-to=jboss.server.config.dir,credential-reference={clear-text=secret3},type=JKS,required=true)
+/subsystem=elytron/key-manager=httpsKM:add(key-store=httpsKS,credential-reference={clear-text=secret2})
 /subsystem=elytron/trust-manager=httpsTM:add(key-store=httpsTS)
 /subsystem=elytron/server-ssl-context=httpsSSC:add(key-manager=httpsKM,trust-manager=httpsTM,protocols=["TLSv1","TLSv1.2"])
 {% endhighlight %}
