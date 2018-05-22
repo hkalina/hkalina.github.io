@@ -8,6 +8,23 @@ layout: default
   {{ content }}
 </div>
 
+<!-- Social Button HTML -->
+<div class="share">
+<a href="http://twitter.com/share?url={{page.url|absolute_url|url_encode}}&amp;text={{page.title|url_encode}}" target="_blank" class="btn share-btn twitter">
+    <i class="fab fa-twitter"></i>
+</a>
+<a href="https://plus.google.com/share?url={{page.url|absolute_url|url_encode}}" target="_blank" class="btn share-btn google-plus">
+    <i class="fab fa-google-plus-g"></i>
+</a>
+<a href="http://www.facebook.com/sharer/sharer.php?u={{page.url|absolute_url|url_encode}}" target="_blank" class="btn share-btn facebook">
+    <i class="fab fa-facebook-f"></i>
+</a>
+<a href="http://www.linkedin.com/shareArticle?url={{page.url|absolute_url|url_encode}}&amp;title={{page.title|url_encode}}&amp;summary={{post.excerpt|strip_html|url_encode}}" target="_blank" class="btn share-btn linkedin">
+    <i class="fab fa-linkedin-in"></i>
+</a>
+</div>
+
+<!-- Google comments -->
 <div class="g-comments"
      data-href="{{site.url}}{{page.url}}"
      data-width="600"
