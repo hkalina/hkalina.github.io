@@ -209,7 +209,7 @@ For troubleshotting you may want to enable debug logging of Elytron security:
 
 Try to access management console over HTTPS:
 
-[https://localhost:9993/console/]
+https://localhost:9993/console/
 
 Web browser should ask for client SSL certifice first, BASIC login dialog should be shown if certificate authentication fails.
 
@@ -229,7 +229,7 @@ Password: secret
 
 Try to connect using `jboss-cli` with SSL certificate:
 
-You will need to add the server into `bin/jboss-cli.xml`:
+You will need to add SSL section into `bin/jboss-cli.xml`:
 
 {% highlight xml %}
 <ssl>
